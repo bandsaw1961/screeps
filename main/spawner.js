@@ -14,16 +14,16 @@ module.exports = {
                 delete Memory.creeps[name];
             }
         }
-        
-        var minimumCreeps = { 'harvester': 10, 'upgrader': 4 };
+
+        var minimumCreeps = { harvester: 10, upgrader: 4, builder: 1 };
         var creepCount = { };
         _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
-        _.each(['harvester', 'upgrader'], (type) => {
+        _.each(['builder', 'harvester', 'upgrader'], (type) => {
             console.log(`${type}: ${creepCount[type]}`);
             if (creepCount[type] < minimumCreeps[type]) {
                 Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE,MOVE], undefined, { role: type, working: false});
             }
-        });        
-        
+        });
+
     }
 };
