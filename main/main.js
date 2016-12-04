@@ -33,7 +33,7 @@ module.exports.loop = function () {
     let creep = Game.creeps[name];
     let c = creeps[creep.memory.role];
     if (c) {
-      c.role.run(creep;)
+      c.role.run(creep)
     }
   }
 
