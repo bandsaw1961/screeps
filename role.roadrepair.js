@@ -2,10 +2,10 @@ var sources = require('sources');
 
 module.exports = {
 
-  role: 'roadrepairer',
+  roleName: 'roadrepairer',
 
   spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+   return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {

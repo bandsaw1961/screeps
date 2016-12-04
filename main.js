@@ -1,40 +1,9 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
-var roleRoadrepair = require('role.roadrepair');
+var roleRoadrepairer = require('role.roadrepair');
 
 module.exports.loop = function () {
-
-  var tower = Game.getObjectById('38f58cda47bb69d630158492');
-  if(tower) {
-    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: (structure) => structure.hits < structure.hitsMax
-    });
-    if(closestDamagedStructure) {
-      tower.repair(closestDamagedStructure);
-    }
-
-    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if(closestHostile) {
-      tower.attack(closestHostile);
-    }
-  }
-
-  var creeps = {
-    harvester: { count: 14, role: roleHarvester },
-    upgrader: { count: 8, role: roleUpgrader },
-    builder: { count: 8, role: roleBuilder },
-    roadrepair: { count: 2, role: roleRoadrepair }
-  }
-
-  // Run each creep
-  for(var name in Game.creeps) {
-    let creep = Game.creeps[name];
-    let c = creeps[creep.memory.role];
-    if (c) {
-      c.role.run(creep)
-    }
-  }
 
   // Remove dead memory
   for (let name in Memory.creeps) {
@@ -43,15 +12,54 @@ module.exports.loop = function () {
     }
   }
 
+  // var tower = Game.getObjectById('38f58cda47bb69d630158492');
+  // if(tower) {
+  //   var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+  //     filter: (structure) => structure.hits < structure.hitsMax
+  //   });
+  //   if(closestDamagedStructure) {
+  //     tower.repair(closestDamagedStructure);
+  //   }
+  //
+  //   var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+  //   if(closestHostile) {
+  //     tower.attack(closestHostile);
+  //   }
+  // }
+
+  // In order of priority
+  const creeps = [
+    { name: 'harvester',    count: 20, role: roleHarvester },
+    { name: 'upgrader',     count: 12, role: roleUpgrader },
+    { name: 'builder',      count: 8, role: roleBuilder },
+    { name: 'roadrepairer', count: 1, role: roleRoadrepairer }
+  ]
+
+  // Run each creep
+  for(let name in Game.creeps) {
+    let creep = Game.creeps[name];
+    // creep.memory.role = 'harvester';
+    let c = _.find(creeps, (c) => c.name === creep.memory.role);
+    if (c) {
+      c.role.run(creep)
+    }
+  }
+
   // Respawn missing creeps
+  let spawnPoint = Game.spawns.Spawn1;
   let creepCount = {};
+  let s = "";
+  let spawning = false;
   _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
-  _.each(Object.keys(creeps), (role) => {
-    if ((creepCount[role] || 0) < creeps[role].count) {
-      let name = creeps[role].role.spawn();
+  _.each(creeps, (c) => {
+    s += `${c.name} ${(creepCount[c.name]||0)}/${c.count} `;
+    if (((creepCount[c.name] || 0) < c.count) && !spawning) {
+      let name = c.role.spawn(spawnPoint);
       if (!(name < 0)) {
-        console.log(`Spawned: ${name} ${role}`)
+        spawning = true;
+        console.log(`Spawned: ${name} ${c.name} ${(creepCount[c.name] || 0)+1}/${c.count}`)
       }
     }
   });
+  console.log(s);
 }

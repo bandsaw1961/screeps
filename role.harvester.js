@@ -2,10 +2,10 @@ var sources = require('sources');
 
 var roleHarvester = {
 
-  role: 'harvester',
+  roleName: 'harvester',
 
   spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   /** @param {Creep} creep **/

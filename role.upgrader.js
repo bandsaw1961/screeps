@@ -2,10 +2,10 @@ var sources = require('sources');
 
 var roleUpgrader = {
 
-  role: 'upgrader',
+  roleName: 'upgrader',
 
-  spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+  spawn: function(spawnPoint) {
+    return spawnPoint.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {

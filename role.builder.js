@@ -2,10 +2,10 @@ var sources = require('sources');
 
 var roleBuilder = {
 
-  role: 'builder',
+  roleName: 'builder',
 
   spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+   return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {
@@ -20,10 +20,10 @@ var roleBuilder = {
     }
 
     if(creep.memory.building) {
-      var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-      if(targets.length) {
-        if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(targets[0]);
+      var target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+      if(target) {
+        if(creep.build(target) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(target);
         }
       }
     }
