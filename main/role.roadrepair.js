@@ -1,13 +1,23 @@
 module.exports = {
 
+  role: 'roadrepairer',
+
+  spawn: function() {
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+  },
+
   run: function(creep) {
-    if(creep.energy == 0) {
-      var spwn = creep.pos.findClosestByRange(FIND_MY_SPAWNS);
-      creep.moveTo(spwn);
-      if((spwn) > [199]) {
-        spwn.transferEnergy(creep);
-      }
-    } else {
+
+    if (creep.memory.working && creep.carry.energy == 0) {
+      creep.memory.working = false;
+      creep.say('harvesting');
+    }
+    if (!creep.memory.working && creep.carry.energy == creep.carryCapacity) {
+      creep.memory.working = true;
+      creep.say('repairing');
+    }
+
+    if(creep.memory.working) {
       var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
           if(object.structureType != STRUCTURE_ROAD ) {
@@ -23,6 +33,11 @@ module.exports = {
         if(creep.repair(target) == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
         }
+      }
+    } else {
+      var source = sources.findBest(creep);
+      if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(source);
       }
     }
   },

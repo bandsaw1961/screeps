@@ -2,6 +2,12 @@ var sources = require('sources');
 
 var roleBuilder = {
 
+  role: 'builder',
+
+  spawn: function() {
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
+  },
+
   /** @param {Creep} creep **/
   run: function(creep) {
 
