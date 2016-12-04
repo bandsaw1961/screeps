@@ -20,7 +20,7 @@ module.exports = {
         _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
         _.each(['builder', 'harvester', 'upgrader'], (type) => {
             console.log(`${type}: ${creepCount[type]}`);
-            if (creepCount[type] < minimumCreeps[type]) {
+            if ((creepCount[type] || 0) < minimumCreeps[type]) {
                 Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE,MOVE], undefined, { role: type, working: false});
             }
         });
