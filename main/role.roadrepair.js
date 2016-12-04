@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function() {
+  run: function(creep) {
     if(creep.energy == 0) {
       var spwn = creep.pos.findClosest(FIND_MY_SPAWNS);
       creep.moveTo(spwn);
