@@ -33,5 +33,5 @@ module.exports.loop = function () {
       roleBuilder.run(creep);
     }
   }
-  spawner.run();
+  spawner.respawn();
 }

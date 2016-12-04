@@ -11,7 +11,7 @@ module.exports = {
 
   creeps: { harvester: 10, upgrader: 4, builder: 4 },
 
-  run: function() {
+  respawn: function() {
     for (let name in Memory.creeps) {
         if (Game.creeps[name] === undefined) {
             delete Memory.creeps[name];
@@ -19,12 +19,17 @@ module.exports = {
     }
 
     let creepCount = {};
+    let s = "";
     _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
     _.each(Object.keys(this.creeps), (type) => {
-      console.log(`${type}: ${creepCount[type]}`);
+      s = s + `${type}: ${creepCount[type]} `;
       if ((creepCount[type] || 0) < this.creeps[type]) {
-        Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE,MOVE], undefined, { role: type, working: false});
+        let name = Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE,MOVE], undefined, { role: type, working: false});
+        if (!(name < 0)) {
+          console.log(`Spawned: ${name} ${type}`)
+        }
       }
     });
+    console.log(s);
   }
 };
