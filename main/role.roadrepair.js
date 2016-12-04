@@ -8,7 +8,7 @@ module.exports = {
         spwn.transferEnergy(creep);
       }
     } else {
-      var SR = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+      var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
           if(object.structureType != STRUCTURE_ROAD ) {
             return false;
@@ -19,9 +19,9 @@ module.exports = {
           return true;
         }
       });
-      if(targets.length) {
-        if(creep.repair(targets[0]) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(targets[0]);
+      if(target) {
+        if(creep.repair(target) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(target);
         }
       }
     }
