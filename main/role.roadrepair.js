@@ -2,13 +2,13 @@ module.exports = {
 
   run: function(creep) {
     if(creep.energy == 0) {
-      var spwn = creep.pos.findClosest(FIND_MY_SPAWNS);
+      var spwn = creep.pos.findClosestByRange(FIND_MY_SPAWNS);
       creep.moveTo(spwn);
       if((spwn) > [199]) {
         spwn.transferEnergy(creep);
       }
     } else {
-      var SR = creep.pos.findClosest(FIND_STRUCTURES, {
+      var SR = creep.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
           if(object.structureType != STRUCTURE_ROAD ) {
             return false;
