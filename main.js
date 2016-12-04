@@ -21,10 +21,10 @@ module.exports.loop = function () {
   }
 
   var creeps = {
-    harvester: { count: 8, role: roleHarvester },
+    harvester: { count: 14, role: roleHarvester },
     upgrader: { count: 8, role: roleUpgrader },
     builder: { count: 8, role: roleBuilder },
-    roadrepair: { count: 1, role: roleRoadrepair }
+    roadrepair: { count: 2, role: roleRoadrepair }
   }
 
   // Run each creep

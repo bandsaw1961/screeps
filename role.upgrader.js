@@ -8,7 +8,6 @@ var roleUpgrader = {
     return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.role, working: false});
   },
 
-  /** @param {Creep} creep **/
   run: function(creep) {
 
     if(creep.memory.upgrading && creep.carry.energy == 0) {
