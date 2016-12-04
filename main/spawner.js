@@ -9,7 +9,7 @@
 
 module.exports = {
 
-  creeps: { harvester: 5, upgrader: 6, builder: 6 },
+  creeps: { harvester: 8, upgrader: 8, builder: 8 },
 
   respawn: function() {
     for (let name in Memory.creeps) {
