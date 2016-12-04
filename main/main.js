@@ -5,7 +5,6 @@ var spawner = require('spawner');
 
 module.exports.loop = function () {
 
-  console.log("main");
   var tower = Game.getObjectById('38f58cda47bb69d630158492');
   if(tower) {
     var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
