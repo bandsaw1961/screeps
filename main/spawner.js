@@ -24,7 +24,7 @@ module.exports = {
     _.each(Object.keys(this.creeps), (type) => {
       s = s + `${type}: ${creepCount[type]} `;
       if ((creepCount[type] || 0) < this.creeps[type]) {
-        let name = Game.spawns.Spawn1.createCreep([WORK,CARRY,MOVE,MOVE], undefined, { role: type, working: false});
+        let name = Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: type, working: false});
         if (!(name < 0)) {
           console.log(`Spawned: ${name} ${type}`)
         }
