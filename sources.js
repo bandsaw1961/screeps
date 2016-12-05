@@ -21,7 +21,7 @@ module.exports = {
         return (
           s.structureType == STRUCTURE_SPAWN ||
           s.structureType == s.STRUCTURE_EXTENSION
-        ) && s.energy > s.energyCapacity / 2;
+        ) && s.energy && s.energy > s.energyCapacity / 2;
       }});
   },
 

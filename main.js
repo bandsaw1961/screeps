@@ -3,8 +3,11 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRoadrepairer = require('role.roadrepair');
 var game = require('game');
+require('prototype.creep')();
 
 module.exports.loop = function () {
+
+  Memory.wallHits = 500;
 
   // Remove dead memory
   for (let name in Memory.creeps) {

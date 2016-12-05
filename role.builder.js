@@ -5,7 +5,7 @@ var roleBuilder = {
   roleName: 'builder',
 
   spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {
@@ -27,14 +27,7 @@ var roleBuilder = {
     }
 
     if(creep.memory.working) {
-      var target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-      if(target) {
-        if(creep.build(target) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(target);
-        }
-      } else {
-        creep.moveTo(Game.flags.Flag1)
-      }
+      creep.doTaskBuild() || creep.doTaskUpgradeController();
     }
     else {
       // Get energy from spawn if we don't need to spawn creeps
@@ -47,10 +40,13 @@ var roleBuilder = {
       } else {
         const source = sources.findNearestEnergy(creep);
         if (source) {
+          console.log(`${creep.name} moving to ${source.id}`);
           const energy = Math.min([creep.carryCapacity, source.energy])
-          if(creep.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(source);
-          }
+          creep.withdraw(source, RESOURCE_ENERGY, energy);
+          creep.moveTo(source);
+        } else {
+          creep.memory.harvest = true;
+          console.log(`${creep.name} switching to harvest`);
         }
       }
     }

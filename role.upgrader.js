@@ -5,7 +5,7 @@ var roleUpgrader = {
   roleName: 'upgrader',
 
   spawn: function(spawnPoint) {
-    return spawnPoint.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
+    return spawnPoint.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {
@@ -20,9 +20,7 @@ var roleUpgrader = {
     }
 
     if(creep.memory.working) {
-      if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(creep.room.controller);
-      }
+      creep.doTaskUpgradeController();
     }
     else {
       const source = Game.getObjectById('5836b92f8b8b9619519f354b')

@@ -27,21 +27,7 @@ module.exports = {
     }
 
     if(creep.memory.working) {
-      var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: function(object){
-          if(object.hits > object.hitsMax / 3) {
-            return false;
-          }
-          return true;
-        }
-      });
-      if(target) {
-        if(creep.repair(target) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(target);
-        }
-      } else {
-        creep.moveTo(Game.flags.Flag1)
-      }
+      creep.doTaskRepair() || creep.doTaskSupplyTower() || creep.moveTo(Game.flags.Flag1);
     } else {
       // Get energy from spawn if we don't need to spawn creeps
       if (creep.memory.harvest) {
