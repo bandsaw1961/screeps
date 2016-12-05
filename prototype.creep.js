@@ -11,6 +11,16 @@ module.exports = function() {
     });
   };
 
+  Creep.prototype.findNearestEnergy = function() {
+    return this.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: (s) => {
+        return (
+          s.structureType == STRUCTURE_SPAWN ||
+          s.structureType == s.STRUCTURE_EXTENSION
+        ) && s.energy && s.energy > s.energyCapacity / 2;
+      }});
+  };
+
   Creep.prototype.doTaskHarvest = function(site) {
     const source = site ? Game.getObjectById(site) : this.findBestSource();
     if(this.harvest(source) == ERR_NOT_IN_RANGE) {
@@ -19,9 +29,27 @@ module.exports = function() {
     return true;
   };
 
+  Creep.prototype.doTaskReplenish = function() {
+    const target = this.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: (structure) => {
+        return (structure.structureType == STRUCTURE_SPAWN ||
+                structure.structureType == STRUCTURE_EXTENSION ||
+                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+      }
+    });
+    if (target) {
+      if(this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(target);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   Creep.prototype.doTaskRepair = function() {
     const target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: function(s) {
+      filter: (s) => {
         if (s.structureType == STRUCTURE_WALL) {
           return s.hits < Memory.wallHits;
         } else {
@@ -40,7 +68,8 @@ module.exports = function() {
   };
 
   Creep.prototype.doTaskSupplyTower = function() {
-    if (target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity })) {
+    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity });
+    if (target) {
       if(this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(target);
       }
@@ -67,6 +96,28 @@ module.exports = function() {
       this.moveTo(this.room.controller);
     }
     return true;
+  };
+
+  // Either get energy from storage or harvest
+  Creep.prototype.getEnergy = function(site) {
+    if (this.memory.harvest) {
+      const source = site ? Game.getObjectById(site) : this.findBestSource();
+      if(this.harvest(source) == ERR_NOT_IN_RANGE) {
+        this.moveTo(source);
+      }
+    } else {
+      var source;
+      if (!Memory.needToSpawn && (source = this.findNearestEnergy())) {
+        const energy = Math.min([this.carryCapacity, source.energy])
+        if(this.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
+          this.moveTo(source);
+        }
+      } else {
+        // Switch to harvesting if no energy available or we need to spawn
+        this.memory.harvest = true;
+        this.getEnergy(site);
+      }
+    }
   };
 
 };

@@ -12,7 +12,8 @@ var roleUpgrader = {
 
     if(creep.memory.working && creep.carry.energy === 0) {
       creep.memory.working = false;
-      creep.say('harvesting');
+      creep.memory.harvest = false;
+      creep.say('get energy');
     }
     if(!creep.memory.working && creep.carry.energy === creep.carryCapacity) {
       creep.memory.working = true;
@@ -23,11 +24,7 @@ var roleUpgrader = {
       creep.doTaskUpgradeController();
     }
     else {
-      const source = Game.getObjectById('5836b92f8b8b9619519f354b')
-      // var source = sources.findBest(creep);
-      if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(source);
-      }
+      creep.getEnergy('5836b92f8b8b9619519f354b');
     }
   }
 };
