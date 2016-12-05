@@ -29,21 +29,13 @@ module.exports.loop = function () {
 
   // In order of priority
   const creeps = [
-    { name: 'harvester',    count: 20, role: roleHarvester },
-    { name: 'upgrader',     count: 12, role: roleUpgrader },
-    { name: 'builder',      count: 8, role: roleBuilder },
-    { name: 'roadrepairer', count: 1, role: roleRoadrepairer }
+    { role: 'harvester',    count: 14, handler: roleHarvester },
+    { role: 'upgrader',     count: 8, handler: roleUpgrader },
+    { role: 'builder',      count: 8, handler: roleBuilder },
+    { role: 'roadrepairer', count: 3, handler: roleRoadrepairer }
   ]
 
-  // Run each creep
-  for(let name in Game.creeps) {
-    let creep = Game.creeps[name];
-    // creep.memory.role = 'harvester';
-    let c = _.find(creeps, (c) => c.name === creep.memory.role);
-    if (c) {
-      c.role.run(creep)
-    }
-  }
+  Memory.needToSpawn = false;
 
   // Respawn missing creeps
   let spawnPoint = Game.spawns.Spawn1;
@@ -52,14 +44,28 @@ module.exports.loop = function () {
   let spawning = false;
   _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
   _.each(creeps, (c) => {
-    s += `${c.name} ${(creepCount[c.name]||0)}/${c.count} `;
-    if (((creepCount[c.name] || 0) < c.count) && !spawning) {
-      let name = c.role.spawn(spawnPoint);
-      if (!(name < 0)) {
-        spawning = true;
-        console.log(`Spawned: ${name} ${c.name} ${(creepCount[c.name] || 0)+1}/${c.count}`)
+    s += `${c.role} ${(creepCount[c.role]||0)}/${c.count} `;
+    if ((creepCount[c.role] || 0) < c.count) {
+      Memory.needToSpawn = true;
+      if (!spawning) {
+        let name = c.handler.spawn(spawnPoint);
+        if (!(name < 0)) {
+          spawning = true;
+          console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)
+        }
       }
     }
   });
-  console.log(s);
+  // console.log(s);
+
+  // Run each creep
+  for(let name in Game.creeps) {
+    let creep = Game.creeps[name];
+    // creep.memory.role = 'harvester';
+    let c = _.find(creeps, (c) => c.role === creep.memory.role);
+    if (c) {
+      c.handler.run(creep)
+    }
+  }
+
 }

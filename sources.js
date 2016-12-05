@@ -11,4 +11,8 @@ module.exports = {
     });
   },
 
+  findNearestSpawn: function(creep) {
+    return creep.pos.findClosestByRange(FIND_MY_SPAWNS);
+  },
+
 };
