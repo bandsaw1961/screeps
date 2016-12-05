@@ -15,4 +15,14 @@ module.exports = {
     return creep.pos.findClosestByRange(FIND_MY_SPAWNS);
   },
 
+  findNearestEnergy: function(creep) {
+    return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: (s) => {
+        return (
+          s.structureType == STRUCTURE_SPAWN ||
+          s.structureType == s.STRUCTURE_EXTENSION
+        ) && s.energy > s.energyCapacity / 2;
+      }});
+  },
+
 };

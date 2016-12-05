@@ -5,7 +5,7 @@ var roleBuilder = {
   roleName: 'builder',
 
   spawn: function() {
-   return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {
@@ -19,7 +19,7 @@ var roleBuilder = {
       creep.memory.working = false;
       creep.memory.harvest = false;
       creep.say('withdrawing');
-      console.log('withdrawing');
+      console.log(`${creep.name} is withdrawing`);
     }
     if(!creep.memory.working && creep.carry.energy === creep.carryCapacity) {
       creep.memory.working = true;
@@ -32,6 +32,8 @@ var roleBuilder = {
         if(creep.build(target) == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
         }
+      } else {
+        creep.moveTo(Game.flags.Flag1)
       }
     }
     else {
@@ -43,10 +45,12 @@ var roleBuilder = {
           creep.moveTo(source);
         }
       } else {
-        const source = sources.findNearestSpawn(creep);
-        const energy = Math.min([creep.carryCapacity, source.energy])
-        if(creep.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(source);
+        const source = sources.findNearestEnergy(creep);
+        if (source) {
+          const energy = Math.min([creep.carryCapacity, source.energy])
+          if(creep.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source);
+          }
         }
       }
     }

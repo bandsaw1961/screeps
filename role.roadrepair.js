@@ -5,7 +5,7 @@ module.exports = {
   roleName: 'roadrepairer',
 
   spawn: function() {
-   return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
+    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,MOVE], undefined, { role: this.roleName, working: false});
   },
 
   run: function(creep) {
@@ -19,7 +19,7 @@ module.exports = {
       creep.memory.working = false;
       creep.memory.harvest = false;
       creep.say('withdrawing');
-      console.log('withdrawing');
+      console.log(`${creep.name} is withdrawing`);
     }
     if (!creep.memory.working && creep.carry.energy === creep.carryCapacity) {
       creep.memory.working = true;
@@ -29,9 +29,6 @@ module.exports = {
     if(creep.memory.working) {
       var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
-          // if(object.structureType != STRUCTURE_ROAD ) {
-          //   return false;
-          // }
           if(object.hits > object.hitsMax / 3) {
             return false;
           }
@@ -42,6 +39,8 @@ module.exports = {
         if(creep.repair(target) == ERR_NOT_IN_RANGE) {
           creep.moveTo(target);
         }
+      } else {
+        creep.moveTo(Game.flags.Flag1)
       }
     } else {
       // Get energy from spawn if we don't need to spawn creeps
@@ -52,10 +51,12 @@ module.exports = {
           creep.moveTo(source);
         }
       } else {
-        const source = sources.findNearestSpawn(creep);
-        const energy = Math.min([creep.carryCapacity, source.energy])
-        if(creep.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(source);
+        const source = sources.findNearestEnergy(creep);
+        if (source) {
+          const energy = Math.min([creep.carryCapacity, source.energy])
+          if(creep.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source);
+          }
         }
       }
     }

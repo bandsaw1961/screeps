@@ -17,14 +17,14 @@ var roleHarvester = {
     }
     if (!creep.memory.working && creep.carry.energy === creep.carryCapacity) {
       creep.memory.working = true;
-      creep.say("delivering");
+      creep.say(`delivering ${creep.carry.energy.toString()}`);
     }
 
     if(creep.memory.working) {
       var targets = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-          return (structure.structureType == STRUCTURE_EXTENSION ||
-                  structure.structureType == STRUCTURE_SPAWN ||
+          return (structure.structureType == STRUCTURE_SPAWN ||
+                  structure.structureType == STRUCTURE_EXTENSION ||
                   structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
         }
       });

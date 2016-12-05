@@ -2,6 +2,7 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRoadrepairer = require('role.roadrepair');
+var game = require('game');
 
 module.exports.loop = function () {
 
@@ -12,25 +13,31 @@ module.exports.loop = function () {
     }
   }
 
-  // var tower = Game.getObjectById('38f58cda47bb69d630158492');
-  // if(tower) {
-  //   var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-  //     filter: (structure) => structure.hits < structure.hitsMax
-  //   });
-  //   if(closestDamagedStructure) {
-  //     tower.repair(closestDamagedStructure);
-  //   }
-  //
-  //   var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-  //   if(closestHostile) {
-  //     tower.attack(closestHostile);
-  //   }
-  // }
+  _.each(game.findAllStructures(STRUCTURE_TOWER), (tower) => {
+    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: (structure) => structure.hits < structure.hitsMax
+    });
+    if(closestDamagedStructure) {
+      tower.repair(closestDamagedStructure);
+    }
+
+    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    if(closestHostile) {
+      tower.attack(closestHostile);
+    }
+  });
+
+  // Safe mode
+  _.each(game.findAllStructures(STRUCTURE_CONTROLLER), (controller) => {
+    if (controller.safeMode === undefined && controller.safeModeAvailable > 0) {
+      controller.activateSafeMode();
+    }
+  });
 
   // In order of priority
   const creeps = [
-    { role: 'harvester',    count: 14, handler: roleHarvester },
-    { role: 'upgrader',     count: 8, handler: roleUpgrader },
+    { role: 'harvester',    count: 10, handler: roleHarvester },
+    { role: 'upgrader',     count: 10, handler: roleUpgrader },
     { role: 'builder',      count: 8, handler: roleBuilder },
     { role: 'roadrepairer', count: 3, handler: roleRoadrepairer }
   ]
@@ -41,18 +48,15 @@ module.exports.loop = function () {
   let spawnPoint = Game.spawns.Spawn1;
   let creepCount = {};
   let s = "";
-  let spawning = false;
   _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
   _.each(creeps, (c) => {
     s += `${c.role} ${(creepCount[c.role]||0)}/${c.count} `;
-    if ((creepCount[c.role] || 0) < c.count) {
+    if ((creepCount[c.role] || 0) < c.count && !Memory.needToSpawn) {
       Memory.needToSpawn = true;
-      if (!spawning) {
-        let name = c.handler.spawn(spawnPoint);
-        if (!(name < 0)) {
-          spawning = true;
-          console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)
-        }
+      let name = c.handler.spawn(spawnPoint);
+      if (!(name < 0)) {
+        spawning = true;
+        console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)
       }
     }
   });
