@@ -102,19 +102,27 @@ module.exports = function() {
   Creep.prototype.getEnergy = function(site) {
     if (this.memory.harvest) {
       const source = site ? Game.getObjectById(site) : this.findBestSource();
-      if(this.harvest(source) == ERR_NOT_IN_RANGE) {
-        this.moveTo(source);
+      if (source) {
+        if(this.harvest(source) == ERR_NOT_IN_RANGE) {
+          this.moveTo(source);
+        }
+      } else {
+        // If there are no sources, switch back to finding an energy store
+        this.memory.harvest = false;
+        console.log(`${this.name} switching back to finding store`);
       }
     } else {
       var source;
       if (!Memory.needToSpawn && (source = this.findNearestEnergy())) {
-        const energy = Math.min([this.carryCapacity, source.energy])
+        const energy = Math.min([this.carryCapacity, source.energy]);
+        console.log(energy);
         if(this.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
           this.moveTo(source);
         }
       } else {
         // Switch to harvesting if no energy available or we need to spawn
         this.memory.harvest = true;
+        console.log(`${this.name} switching to harvest`);
         this.getEnergy(site);
       }
     }

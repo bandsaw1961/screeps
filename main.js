@@ -41,10 +41,10 @@ module.exports.loop = function () {
 
   // In order of priority
   const creeps = [
-    { role: 'harvester',    count: 10, handler: roleHarvester },
-    { role: 'upgrader',     count: 10, handler: roleUpgrader },
-    { role: 'builder',      count: 8, handler: roleBuilder },
-    { role: 'roadrepairer', count: 3, handler: roleRoadrepairer }
+    { role: 'harvester',    count: 4, handler: roleHarvester },
+    { role: 'upgrader',     count: 4, handler: roleUpgrader },
+    { role: 'builder',      count: 4, handler: roleBuilder },
+    { role: 'roadrepairer', count: 4, handler: roleRoadrepairer }
   ]
 
   Memory.needToSpawn = false;
