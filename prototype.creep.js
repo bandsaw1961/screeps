@@ -31,10 +31,10 @@ module.exports = function() {
 
   Creep.prototype.doTaskReplenish = function() {
     const target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: (structure) => {
-        return (structure.structureType == STRUCTURE_SPAWN ||
-                structure.structureType == STRUCTURE_EXTENSION ||
-                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+      filter: (s) => {
+        return (s.structureType == STRUCTURE_SPAWN ||
+                s.structureType == STRUCTURE_EXTENSION ||
+                s.structureType == STRUCTURE_TOWER && !Memory.needToSpawn) && s.energy < s.energyCapacity;
       }
     });
     if (target) {
@@ -68,7 +68,7 @@ module.exports = function() {
   };
 
   Creep.prototype.doTaskSupplyTower = function() {
-    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity });
+    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < 2*s.energyCapacity/3 });
     if (target) {
       if(this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(target);

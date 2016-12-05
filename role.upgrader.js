@@ -4,10 +4,6 @@ var roleUpgrader = {
 
   roleName: 'upgrader',
 
-  spawn: function(spawnPoint) {
-    return spawnPoint.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
-  },
-
   run: function(creep) {
 
     if(creep.memory.working && creep.carry.energy === 0) {

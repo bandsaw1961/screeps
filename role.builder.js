@@ -4,10 +4,6 @@ var roleBuilder = {
 
   roleName: 'builder',
 
-  spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
-  },
-
   run: function(creep) {
 
     if (creep.memory.working && creep.carry.energy === 0) {

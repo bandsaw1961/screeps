@@ -4,11 +4,6 @@ var roleHarvester = {
 
   roleName: 'harvester',
 
-  spawn: function() {
-    return Game.spawns.Spawn1.createCreep([WORK,WORK,CARRY,CARRY,MOVE,MOVE], undefined, { role: this.roleName, working: false});
-  },
-
-  /** @param {Creep} creep **/
   run: function(creep) {
 
     if (creep.memory.working && creep.carry.energy === 0) {

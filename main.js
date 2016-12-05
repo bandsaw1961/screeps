@@ -1,9 +1,11 @@
+require('prototype.creep')();
+require('prototype.spawn')();
+
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRoadrepairer = require('role.roadrepair');
 var game = require('game');
-require('prototype.creep')();
 
 module.exports.loop = function () {
 
@@ -17,15 +19,15 @@ module.exports.loop = function () {
   }
 
   _.each(game.findAllStructures(STRUCTURE_TOWER), (tower) => {
-    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: (structure) => structure.hits < structure.hitsMax
+    const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: (s) => s.structureType == STRUCTURE_WALL ? s.hits < Memory.wallHits : s.hits < 2*s.hitsMax/3
     });
-    if(closestDamagedStructure) {
+    if (closestDamagedStructure) {
       tower.repair(closestDamagedStructure);
     }
 
-    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if(closestHostile) {
+    const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    if (closestHostile) {
       tower.attack(closestHostile);
     }
   });
@@ -56,7 +58,7 @@ module.exports.loop = function () {
     s += `${c.role} ${(creepCount[c.role]||0)}/${c.count} `;
     if ((creepCount[c.role] || 0) < c.count && !Memory.needToSpawn) {
       Memory.needToSpawn = true;
-      let name = c.handler.spawn(spawnPoint);
+      let name = spawnPoint.createBalancedCreep(spawnPoint.room.energyCapacityAvailable, c.role);
       if (!(name < 0)) {
         spawning = true;
         console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)
