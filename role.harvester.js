@@ -16,7 +16,7 @@ var roleHarvester = {
     }
 
     if (creep.memory.working) {
-      creep.doTaskReplenish();
+      creep.doTaskReplenish() || creep.doTaskUpgradeController();
     }
     else {
       creep.doTaskHarvest('5836b92f8b8b9619519f354a')

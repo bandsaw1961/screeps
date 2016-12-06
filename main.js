@@ -9,7 +9,7 @@ var game = require('game');
 
 module.exports.loop = function () {
 
-  Memory.wallHits = 500;
+  Memory.wallHits = 20000;
 
   // Remove dead memory
   for (let name in Memory.creeps) {
@@ -34,31 +34,36 @@ module.exports.loop = function () {
 
   // Safe mode
   _.each(game.findAllStructures(STRUCTURE_CONTROLLER), (controller) => {
-    if (controller.safeMode === undefined && controller.safeModeAvailable > 0) {
+    if (controller.room.find(FIND_HOSTILE_CREEPS).length > 0 && controller.safeMode === undefined && controller.safeModeAvailable > 0) {
       controller.activateSafeMode();
     }
   });
 
   // In order of priority
   const creeps = [
-    { role: 'harvester',    count: 4, handler: roleHarvester },
-    { role: 'upgrader',     count: 4, handler: roleUpgrader },
-    { role: 'builder',      count: 4, handler: roleBuilder },
-    { role: 'roadrepairer', count: 4, handler: roleRoadrepairer }
+    { role: 'harvester',    count: 3, handler: roleHarvester },
+    { role: 'upgrader',     count: 2, handler: roleUpgrader },
+    { role: 'builder',      count: 2, handler: roleBuilder },
+    { role: 'roadrepairer', count: 1, handler: roleRoadrepairer }
   ]
 
-  Memory.needToSpawn = false;
 
   // Respawn missing creeps
   let spawnPoint = Game.spawns.Spawn1;
   let creepCount = {};
   let s = "";
+  Memory.needToSpawn = false;
   _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
   _.each(creeps, (c) => {
     s += `${c.role} ${(creepCount[c.role]||0)}/${c.count} `;
     if ((creepCount[c.role] || 0) < c.count && !Memory.needToSpawn) {
       Memory.needToSpawn = true;
-      let name = spawnPoint.createBalancedCreep(spawnPoint.room.energyCapacityAvailable, c.role);
+      let energy = spawnPoint.room.energyCapacityAvailable;
+      if (creepCount['harvester'] < 2) {
+        // If we are down to one or less harvesters, then create one with whatever energy we have
+        energy = spawnPoint.room.energyAvailable;
+      }
+      let name = spawnPoint.createBalancedCreep(energy, c.role);
       if (!(name < 0)) {
         spawning = true;
         console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)

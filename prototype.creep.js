@@ -16,16 +16,15 @@ module.exports = function() {
       filter: (s) => {
         return (
           s.structureType == STRUCTURE_SPAWN ||
-          s.structureType == s.STRUCTURE_EXTENSION
+          s.structureType == STRUCTURE_EXTENSION
         ) && s.energy && s.energy > s.energyCapacity / 2;
       }});
   };
 
   Creep.prototype.doTaskHarvest = function(site) {
     const source = site ? Game.getObjectById(site) : this.findBestSource();
-    if(this.harvest(source) == ERR_NOT_IN_RANGE) {
-      this.moveTo(source);
-    }
+    this.harvest(source);
+    this.moveTo(source);
     return true;
   };
 
@@ -103,9 +102,8 @@ module.exports = function() {
     if (this.memory.harvest) {
       const source = site ? Game.getObjectById(site) : this.findBestSource();
       if (source) {
-        if(this.harvest(source) == ERR_NOT_IN_RANGE) {
-          this.moveTo(source);
-        }
+        this.harvest(source);
+        this.moveTo(source);
       } else {
         // If there are no sources, switch back to finding an energy store
         this.memory.harvest = false;
@@ -114,8 +112,7 @@ module.exports = function() {
     } else {
       var source;
       if (!Memory.needToSpawn && (source = this.findNearestEnergy())) {
-        const energy = Math.min([this.carryCapacity, source.energy]);
-        console.log(energy);
+        const energy = Math.min(this.carryCapacity, source.energy);
         if(this.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
           this.moveTo(source);
         }

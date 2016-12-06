@@ -17,7 +17,7 @@ module.exports = {
     }
 
     if (creep.memory.working) {
-      creep.doTaskSupplyTower() || creep.doTaskRepair() || creep.moveTo(Game.flags.Flag1);
+      creep.doTaskSupplyTower() || creep.doTaskRepair() || creep.doTaskUpgradeController();
     } else {
       creep.getEnergy('5836b92f8b8b9619519f354b');
     }
