@@ -1,5 +1,6 @@
 require('prototype.creep')();
 require('prototype.spawn')();
+require('prototype.RoomObject')();
 
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
@@ -19,25 +20,15 @@ module.exports.loop = function () {
   }
 
   _.each(game.findAllStructures(STRUCTURE_TOWER), (tower) => {
-    const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: (s) => s.structureType == STRUCTURE_WALL ? s.hits < Memory.wallHits : s.hits < 2*s.hitsMax/3
-    });
-    if (closestDamagedStructure) {
-      tower.repair(closestDamagedStructure);
-    }
-
-    const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if (closestHostile) {
-      tower.attack(closestHostile);
-    }
+    tower.doTaskRepair() || tower.doTaskAttack();
   });
 
   // Safe mode
-  _.each(game.findAllStructures(STRUCTURE_CONTROLLER), (controller) => {
-    if (controller.room.find(FIND_HOSTILE_CREEPS).length > 0 && controller.safeMode === undefined && controller.safeModeAvailable > 0) {
-      controller.activateSafeMode();
-    }
-  });
+  // _.each(game.findAllStructures(STRUCTURE_CONTROLLER), (controller) => {
+  //   if (controller.room.find(FIND_HOSTILE_CREEPS).length > 0 && controller.safeMode === undefined && controller.safeModeAvailable > 0) {
+  //     controller.activateSafeMode();
+  //   }
+  // });
 
   // In order of priority
   const creeps = [
@@ -50,23 +41,28 @@ module.exports.loop = function () {
 
   // Respawn missing creeps
   let spawnPoint = Game.spawns.Spawn1;
-  let creepCount = {};
+  Memory.creepCount = {};
   let s = "";
   Memory.needToSpawn = false;
-  _.each(Game.creeps, (c) => creepCount[c.memory.role] = (creepCount[c.memory.role] || 0) + 1);
+  Memory.totalCreeps = 0;
+  _.each(Game.creeps, (c) => {
+    Memory.totalCreeps += 1;
+    Memory.creepCount[c.memory.role] = (Memory.creepCount[c.memory.role] || 0) + 1
+  });
   _.each(creeps, (c) => {
-    s += `${c.role} ${(creepCount[c.role]||0)}/${c.count} `;
-    if ((creepCount[c.role] || 0) < c.count && !Memory.needToSpawn) {
+    s += `${c.role} ${(Memory.creepCount[c.role]||0)}/${c.count} `;
+    if ((Memory.creepCount[c.role] || 0) < c.count && !Memory.needToSpawn) {
       Memory.needToSpawn = true;
       let energy = spawnPoint.room.energyCapacityAvailable;
-      if (creepCount['harvester'] < 2) {
-        // If we are down to one or less harvesters, then create one with whatever energy we have
+
+      // If we are down to one or less creeps, then create one with whatever energy we have
+      if ((Memory.totalCreeps || 0) <= 1) {
         energy = spawnPoint.room.energyAvailable;
       }
       let name = spawnPoint.createBalancedCreep(energy, c.role);
       if (!(name < 0)) {
         spawning = true;
-        console.log(`Spawning: ${name} ${c.role} ${(creepCount[c.role] || 0)+1}/${c.count}`)
+        console.log(`Spawning: ${name} ${c.role} ${(Memory.creepCount[c.role] || 0)+1}/${c.count}`)
       }
     }
   });

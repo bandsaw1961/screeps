@@ -11,13 +11,10 @@ module.exports = function() {
     });
   };
 
-  Creep.prototype.findNearestEnergy = function() {
+  Creep.prototype.findNearestStorage = function() {
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
       filter: (s) => {
-        return (
-          s.structureType == STRUCTURE_SPAWN ||
-          s.structureType == STRUCTURE_EXTENSION
-        ) && s.energy && s.energy > s.energyCapacity / 2;
+        return s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0;
       }});
   };
 
@@ -32,8 +29,7 @@ module.exports = function() {
     const target = this.pos.findClosestByRange(FIND_STRUCTURES, {
       filter: (s) => {
         return (s.structureType == STRUCTURE_SPAWN ||
-                s.structureType == STRUCTURE_EXTENSION ||
-                s.structureType == STRUCTURE_TOWER && !Memory.needToSpawn) && s.energy < s.energyCapacity;
+                s.structureType == STRUCTURE_EXTENSION) && s.energy < s.energyCapacity;
       }
     });
     if (target) {
@@ -46,18 +42,10 @@ module.exports = function() {
     }
   };
 
-  Creep.prototype.doTaskRepair = function() {
-    const target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: (s) => {
-        if (s.structureType == STRUCTURE_WALL) {
-          return s.hits < Memory.wallHits;
-        } else {
-          return s.hits < s.hitsMax / 3;
-        }
-      }
-    });
-    if(target) {
-      if(this.repair(target) == ERR_NOT_IN_RANGE) {
+  Creep.prototype.doTaskSupplyTower = function() {
+    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < 2*s.energyCapacity/3 });
+    if (target) {
+      if(this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(target);
       }
       return true;
@@ -66,8 +54,8 @@ module.exports = function() {
     }
   };
 
-  Creep.prototype.doTaskSupplyTower = function() {
-    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < 2*s.energyCapacity/3 });
+  Creep.prototype.doTaskSupplyContainer = function() {
+    const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (s) => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] < s.storeCapacity });
     if (target) {
       if(this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(target);
@@ -101,18 +89,18 @@ module.exports = function() {
   Creep.prototype.getEnergy = function(site) {
     if (this.memory.harvest) {
       const source = site ? Game.getObjectById(site) : this.findBestSource();
-      if (source) {
+      if (source && source.energy > 0) {
         this.harvest(source);
         this.moveTo(source);
       } else {
         // If there are no sources, switch back to finding an energy store
         this.memory.harvest = false;
-        console.log(`${this.name} switching back to finding store`);
+        console.log(`${this.name} finding energy`);
       }
     } else {
       var source;
-      if (!Memory.needToSpawn && (source = this.findNearestEnergy())) {
-        const energy = Math.min(this.carryCapacity, source.energy);
+      if (source = this.findNearestStorage()) {
+        const energy = Math.min(this.carryCapacity, source.store);
         if(this.withdraw(source, RESOURCE_ENERGY, energy) == ERR_NOT_IN_RANGE) {
           this.moveTo(source);
         }
