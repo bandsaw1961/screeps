@@ -24,7 +24,8 @@ var roleBuilder = {
       creep.doTaskBuild() || creep.doTaskUpgradeController();
     }
     else {
-      creep.getEnergy();
+      creep.myTarget = undefined;
+      creep.getEnergy('5836b92f8b8b9619519f354b');
     }
   }
 };

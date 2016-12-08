@@ -19,6 +19,7 @@ var roleHarvester = {
       creep.doTaskReplenish() || creep.doTaskBuild() || creep.doTaskSupplyContainer();
     }
     else {
+      creep.myTarget = undefined;
       creep.doTaskHarvest('5836b92f8b8b9619519f354a')
     }
   }

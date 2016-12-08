@@ -34,7 +34,7 @@ module.exports.loop = function () {
   const creeps = [
     { role: 'harvester',    count: 3, handler: roleHarvester },
     { role: 'upgrader',     count: 2, handler: roleUpgrader },
-    { role: 'builder',      count: 2, handler: roleBuilder },
+    { role: 'builder',      count: 3, handler: roleBuilder },
     { role: 'roadrepairer', count: 1, handler: roleRoadrepairer }
   ]
 
