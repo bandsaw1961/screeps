@@ -39,10 +39,8 @@ module.exports = function() {
     const target = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: filter });
     if (target) {
       this.memory.myTarget = target.id;
+      this.transfer(target, RESOURCE_ENERGY);
       this.moveTo(target);
-      _.forEach(this.pos.findInRange(FIND_STRUCTURES, 1, { filter: filter }), (s) => {
-        this.transfer(s, RESOURCE_ENERGY);
-      });
       return true;
     } else {
       this.memory.myTarget = undefined;
